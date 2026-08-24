@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Monitor Red · Centro de operaciones">
+  <main class="shell">
+    <header class="topbar"><a class="brand" href="/"><span class="brand-mark">⌁</span><span>monitor<span>red</span></span></a><div class="live"><i></i> Actualización cada minuto</div></header>
+    <section class="hero"><div><p class="eyebrow">CENTRO DE OPERACIONES</p><h1>La red, clara.<br /><em>Los incidentes, primero.</em></h1><p class="intro">Estado de conectividad de cada sede en tiempo real, con el historial que necesitás para actuar rápido.</p></div><button id="refresh" class="button">Actualizar ahora <span>↻</span></button></section>
+    <section class="metrics" aria-label="Resumen"><article><span>Disponibilidad</span><strong id="availability">—</strong><small>de equipos monitoreados</small></article><article><span>Operativos</span><strong id="up">—</strong><small>respondiendo correctamente</small></article><article class="attention"><span>Requieren atención</span><strong id="down">—</strong><small>sin respuesta en último chequeo</small></article></section>
+    <section class="section-head"><div><p class="eyebrow">SEDES</p><h2>Estado actual</h2></div><p id="sync" class="muted">Conectando…</p></section>
+    <section id="bases" class="base-grid" aria-live="polite"><div class="empty">Cargando telemetría…</div></section>
+  </main>
+  <script>
+    // @ts-nocheck
+    const $ = (id) => document.getElementById(id);
+    const escape = (value) => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    async function load() {
+      try {
+        const response = await fetch('/api/status'); const data = await response.json();
+        const devices = data.devices || []; const up = devices.filter(d => d.status === 'UP').length;
+        $('availability').textContent = devices.length ? `${Math.round(up / devices.length * 1000) / 10}%` : '—'; $('up').textContent = up; $('down').textContent = devices.length - up;
+        const groups = devices.reduce((all, device) => { (all[device.base] ??= []).push(device); return all; }, {});
+        $('bases').innerHTML = Object.entries(groups).sort(([,a],[,b]) => b.filter(x=>x.status==='DOWN').length - a.filter(x=>x.status==='DOWN').length).map(([base, list]) => {
+          const fallen = list.filter(d => d.status === 'DOWN').length;
+          return `<article class="base-card ${fallen ? 'has-incident' : ''}"><div class="base-title"><div><p>${escape(base)}</p><span>${list.length} equipos</span></div><b class="pill ${fallen ? 'down' : 'up'}">${fallen ? `${fallen} alerta${fallen > 1 ? 's' : ''}` : 'Estable'}</b></div><div class="device-list">${list.map(d => `<div class="device"><span class="dot ${d.status.toLowerCase()}"></span><span>${escape(d.type)}</span><code>${escape(d.ip)}</code><strong>${d.status === 'UP' ? (d.latencyMs == null ? 'ONLINE' : `${d.latencyMs} ms`) : 'SIN RESPUESTA'}</strong></div>`).join('')}</div></article>`;
+        }).join('') || '<div class="empty">Aún no hay chequeos. Iniciá el worker de monitoreo.</div>';
+        $('sync').textContent = `Última consulta: ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
+      } catch { $('bases').innerHTML = '<div class="empty error">No se pudo obtener la telemetría. Verificá MongoDB y el worker.</div>'; }
+    }
+    $('refresh').onclick = load; load(); setInterval(load, 60000);
+  </script>
+</BaseLayout>
