@@ -3,10 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="Monitor Red · Centro de operaciones">
   <main class="shell">
-    <header class="topbar"><a class="brand" href="/"><span class="brand-mark">⌁</span><span>monitor<span>red</span></span></a><div class="live"><i></i> Actualización cada minuto</div></header>
-    <section class="hero"><div><p class="eyebrow">CENTRO DE OPERACIONES</p><h1>La red, clara.<br /><em>Los incidentes, primero.</em></h1><p class="intro">Estado de conectividad de cada sede en tiempo real, con el historial que necesitás para actuar rápido.</p></div><button id="refresh" class="button">Actualizar ahora <span>↻</span></button></section>
+    <header class="topbar"><a class="brand" href="/"><span class="brand-mark">⌁</span><span>monitor<span>red</span></span></a><div class="live"><i></i> Actualización automática cada 10 segundos</div></header>
+    <section class="hero"><div><p class="eyebrow">MONITOREO LOCAL</p><h1>Estado de dispositivos</h1><p class="intro">Solo se muestran los equipos que están respondiendo y los que requieren atención.</p></div><button id="refresh" class="button">Actualizar ahora <span>↻</span></button></section>
     <section class="metrics" aria-label="Resumen"><article><span>Disponibilidad</span><strong id="availability">—</strong><small>de equipos monitoreados</small></article><article><span>Operativos</span><strong id="up">—</strong><small>respondiendo correctamente</small></article><article class="attention"><span>Requieren atención</span><strong id="down">—</strong><small>sin respuesta en último chequeo</small></article></section>
-    <section class="section-head"><div><p class="eyebrow">SEDES</p><h2>Estado actual</h2></div><p id="sync" class="muted">Conectando…</p></section>
+    <section class="section-head"><div><p class="eyebrow">EQUIPOS</p><h2>Estado actual</h2></div><p id="sync" class="muted">Conectando…</p></section>
     <section id="bases" class="base-grid" aria-live="polite"><div class="empty">Cargando telemetría…</div></section>
   </main>
   <script>
@@ -26,6 +26,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         $('sync').textContent = `Última consulta: ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`;
       } catch { $('bases').innerHTML = '<div class="empty error">No se pudo obtener la telemetría. Verificá MongoDB y el worker.</div>'; }
     }
-    $('refresh').onclick = load; load(); setInterval(load, 60000);
+    $('refresh').onclick = load; load(); setInterval(load, 10000);
   </script>
 </BaseLayout>

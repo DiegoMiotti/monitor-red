@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import type { Device, DeviceType } from './types';
 
-const types: DeviceType[] = ['Forti', 'DVR', 'TGO', 'Calle', 'Comedor', 'Jaula', 'Terceros'];
+const types: DeviceType[] = ['Forti', 'DVR', 'TGO', 'Calle', 'Comedor', 'Jaula', 'Terceros', 'Redmi Note 10', 'Motorola'];
 
 export async function loadInventory(path = process.env.EQUIPMENT_CSV_PATH ?? 'templates/equipos.csv'): Promise<Device[]> {
   const [headerLine, ...lines] = (await readFile(path, 'utf8')).replace(/^\uFEFF/, '').trim().split(/\r?\n/);

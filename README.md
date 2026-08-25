@@ -46,7 +46,7 @@ El dashboard queda disponible en `http://localhost:4321`.
 
 ## Variables de entorno
 
-Copiar `.env.example` a `.env` y completar `MONGODB_URI`. Nunca incluir contraseñas SMTP ni URIs con credenciales en el repositorio.
+Copiar `.env.example` a `.env` y completar `MONGODB_URI`. No se configuran credenciales de correo en esta versión local.
 
 | Variable | Descripción | Valor por defecto |
 | --- | --- | --- |
@@ -56,7 +56,6 @@ Copiar `.env.example` a `.env` y completar `MONGODB_URI`. Nunca incluir contrase
 | `MONITOR_INTERVAL_MS` | Frecuencia del ciclo de chequeo | `60000` |
 | `PING_TIMEOUT_SECONDS` | Tiempo máximo por ping | `1` |
 | `RETENTION_DAYS` | Días de historial conservado | `30` |
-| `SMTP_*` / `ALERT_EMAIL_TO` | Credenciales SMTP y destinatario de alertas | — |
 
 ## Estructura
 
@@ -79,7 +78,7 @@ src/
 
 ## Migración desde la versión anterior
 
-Los archivos Python y el CSV se mantienen como referencia durante la transición. El CSV actual puede seguir siendo el inventario de entrada, pero el historial SQLite se reemplaza por las colecciones MongoDB `checks` y `active_alerts`. Las credenciales expuestas en el código legado deben revocarse y moverse a un gestor de secretos antes de cualquier despliegue.
+Los archivos Python y el CSV se mantienen como referencia durante la transición. El CSV actual puede seguir siendo el inventario de entrada, pero el historial SQLite se reemplaza por la colección MongoDB `checks`.
 
 ## Scripts
 
